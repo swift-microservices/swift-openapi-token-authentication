@@ -19,7 +19,7 @@ Add the package to your `Package.swift` dependencies:
 ```swift
 .package(
     url: "https://github.com/swift-microservices/swift-openapi-token-authentication.git",
-    from: "0.1.0"
+    from: "0.1.1"
 ),
 ```
 
@@ -56,6 +56,34 @@ let client = Client(
 Share a session across clients using the same credentials. Access tokens refresh on
 demand within 30 seconds of expiration; customize this with `refreshLeeway`.
 Provide an `AuthenticationStorage` implementation if credentials must survive restarts.
+
+### Anonymous requests
+
+Authentication is required by default. For endpoints that also accept anonymous
+requests, opt in to attaching credentials only when a session is available:
+
+```swift
+AuthenticationMiddleware(session: session, policy: .ifAvailable)
+```
+
+The middleware first calls `accessToken()`, waiting for any in-flight login
+(including QR pairing) or refresh. If token lookup throws
+`AuthenticationSessionError.userAuthenticationRequired`, `.ifAvailable` sends
+the request unchanged without adding an Authorization header. This includes both
+signed-out sessions and expired or rejected refresh credentials discovered during
+token lookup. Existing headers are preserved; an anonymous response, including
+HTTP 401, is returned without attempting refresh or retry.
+
+Other token-lookup errors, including transport failures and cancellation, propagate.
+Once a token has been attached, the normal authenticated refresh and retry behavior
+applies: a failure during the request or its HTTP 401 recovery is not retried
+anonymously. The server still enforces authorization for protected endpoints.
+`accessToken()` itself remains strict; only the middleware applies this policy.
+
+This policy does not change credential validation: the session still requires
+valid refresh credentials when accepting a login or restoring stored credentials.
+
+### Refreshing requests
 
 The middleware refreshes on HTTP 401 by default. Customize this with
 `refreshableStatusCodes` or a response predicate:

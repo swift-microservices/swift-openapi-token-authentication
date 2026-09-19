@@ -11,22 +11,26 @@ import Foundation
 /// authentication failure. Share the session across clients to coordinate refreshes.
 public struct AuthenticationMiddleware<Credentials: Sendable, Response: AuthenticationResponse>: ClientMiddleware {
     private let session: AuthenticationSession<Credentials, Response>
+    private let policy: AuthenticationPolicy
     private let shouldRefresh: @Sendable (HTTPResponse, HTTPBody?) -> Bool
 
     /// Decides whether a response requires authentication refresh.
     public init(
         session: AuthenticationSession<Credentials, Response>,
+        policy: AuthenticationPolicy = .required,
         shouldRefresh: @escaping @Sendable (HTTPResponse, HTTPBody?) -> Bool
     ) {
         self.session = session
+        self.policy = policy
         self.shouldRefresh = shouldRefresh
     }
 
     public init(
         session: AuthenticationSession<Credentials, Response>,
+        policy: AuthenticationPolicy = .required,
         refreshableStatusCodes: [HTTPResponse.Status] = [.unauthorized]
     ) {
-        self.init(session: session) { response, _ in
+        self.init(session: session, policy: policy) { response, _ in
             refreshableStatusCodes.contains(response.status)
         }
     }
@@ -38,7 +42,12 @@ public struct AuthenticationMiddleware<Credentials: Sendable, Response: Authenti
         operationID: String,
         next: @Sendable (HTTPRequest, HTTPBody?, URL) async throws -> (HTTPResponse, HTTPBody?)
     ) async throws -> (HTTPResponse, HTTPBody?) {
-        let token = try await session.accessToken()
+        let token: String
+        do {
+            token = try await session.accessToken()
+        } catch AuthenticationSessionError.userAuthenticationRequired where policy == .ifAvailable {
+            return try await next(request, body, baseURL)
+        }
         var request = request
         request.headerFields[.authorization] = "Bearer \(token)"
 
