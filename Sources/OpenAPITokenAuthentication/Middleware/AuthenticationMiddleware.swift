@@ -1,10 +1,10 @@
-import HTTPTypes
-import OpenAPIRuntime
+public import HTTPTypes
+public import OpenAPIRuntime
 
 #if canImport(FoundationEssentials)
-import FoundationEssentials
+public import FoundationEssentials
 #else
-import Foundation
+public import Foundation
 #endif
 
 /// Applies Bearer authentication and retries a replayable request once after an
@@ -40,7 +40,7 @@ public struct AuthenticationMiddleware<Credentials: Sendable, Response: Authenti
         body: HTTPBody?,
         baseURL: URL,
         operationID: String,
-        next: @Sendable (HTTPRequest, HTTPBody?, URL) async throws -> (HTTPResponse, HTTPBody?)
+        next: @concurrent @Sendable (HTTPRequest, HTTPBody?, URL) async throws -> (HTTPResponse, HTTPBody?)
     ) async throws -> (HTTPResponse, HTTPBody?) {
         let token: String
         do {
