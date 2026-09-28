@@ -34,7 +34,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-openapi-runtime.git", from: "1.12.0", traits: []),
+        .package(url: "https://github.com/apple/swift-openapi-runtime.git", from: "1.12.1", traits: []),
         .package(url: "https://github.com/apple/swift-http-types", from: "1.0.0"),
     ],
     targets: [
