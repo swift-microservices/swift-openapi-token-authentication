@@ -19,7 +19,7 @@ Add the package to your `Package.swift` dependencies:
 ```swift
 .package(
     url: "https://github.com/swift-microservices/swift-openapi-token-authentication.git",
-    from: "0.1.1"
+    from: "0.2.0"
 ),
 ```
 
