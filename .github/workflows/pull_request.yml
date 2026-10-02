@@ -14,8 +14,6 @@ jobs:
     with:
       # Match the other packages' source-header convention.
       license_header_check_enabled: false
-      # Accept the intentional isolation migration while checking all other API changes.
-      api_breakage_check_allowlist_path: .github/api-breakage-allowlist.txt
       # This package does not depend on the DocC plugin.
       docs_check_enabled: false
 
