@@ -1,3 +1,0 @@
-API breakage: func AuthenticationClient.authenticate(credentials:) is now with nonisolated
-API breakage: func AuthenticationClient.refreshAuthentication(refreshToken:) is now with nonisolated
-API breakage: func AuthenticationMiddleware.intercept(_:body:baseURL:operationID:next:) is now with nonisolated
