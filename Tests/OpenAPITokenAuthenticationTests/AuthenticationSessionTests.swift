@@ -31,7 +31,8 @@ struct AuthenticationSessionTests {
             nil,
             TestResponse(refreshToken: ""),
             TestResponse(refreshTokenExpiration: .distantPast),
-        ] as [TestResponse?])
+        ] as [TestResponse?]
+    )
     func unusableStoredCredentialsRequireAuthentication(_ response: TestResponse?) async {
         let storage = InMemoryAuthenticationStorage(response)
         let session = AuthenticationSession(client: TestClient(), storage: storage)
@@ -193,7 +194,8 @@ struct AuthenticationSessionTests {
                 started.signal()
                 await release.wait()
                 return TestResponse(accessToken: "old-account")
-            })
+            }
+        )
         let session = AuthenticationSession(client: client, storage: storage)
         let refresh = Task { try await session.newAccessToken() }
         await started.wait()

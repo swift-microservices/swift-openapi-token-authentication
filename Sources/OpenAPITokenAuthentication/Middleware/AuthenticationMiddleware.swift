@@ -8,7 +8,9 @@ public import Foundation
 #endif
 
 /// Applies Bearer authentication and retries a replayable request once after an
-/// authentication failure. Share the session across clients to coordinate refreshes.
+/// authentication failure.
+///
+/// Share the session across clients to coordinate refreshes.
 public struct AuthenticationMiddleware<Credentials: Sendable, Response: AuthenticationResponse>: ClientMiddleware {
     private let session: AuthenticationSession<Credentials, Response>
     private let policy: AuthenticationPolicy
