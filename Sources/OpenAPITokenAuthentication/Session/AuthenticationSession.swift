@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Zaid Rahhawi
+// SPDX-License-Identifier: MIT
+// See LICENSE for license information.
+
 #if canImport(FoundationEssentials)
 public import FoundationEssentials
 #else

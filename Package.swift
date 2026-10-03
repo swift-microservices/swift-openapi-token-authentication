@@ -1,5 +1,7 @@
 // swift-tools-version: 6.3
-// The swift-tools-version declares the minimum version of Swift required to build this package.
+// Copyright (c) 2026 Zaid Rahhawi
+// SPDX-License-Identifier: MIT
+// See LICENSE for license information.
 
 import PackageDescription
 

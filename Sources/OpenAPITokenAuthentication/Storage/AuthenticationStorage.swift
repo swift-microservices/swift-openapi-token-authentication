@@ -1,9 +1,6 @@
-//
-//  AuthenticationStorage.swift
-//  swift-openapi-token-authentication
-//
-//  Created by Zaid Rahhawi on 9/18/26.
-//
+// Copyright (c) 2026 Zaid Rahhawi
+// SPDX-License-Identifier: MIT
+// See LICENSE for license information.
 
 public protocol AuthenticationStorage<Response>: Sendable {
     associatedtype Response: AuthenticationResponse
