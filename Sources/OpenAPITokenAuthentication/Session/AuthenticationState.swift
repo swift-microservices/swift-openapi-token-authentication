@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Zaid Rahhawi
+// SPDX-License-Identifier: MIT
+// See LICENSE for license information.
+
 /// The observable authentication phase, without credentials or internal tasks.
 public enum AuthenticationState: Sendable, Equatable {
     case unauthenticated

@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Zaid Rahhawi
+// SPDX-License-Identifier: MIT
+// See LICENSE for license information.
+
 #if canImport(FoundationEssentials)
 public import FoundationEssentials
 #else
@@ -65,6 +69,7 @@ public actor AuthenticationSession<Credentials: Sendable, Response: Authenticati
     }
 
     /// Creates an independent subscription, initially buffering the current state.
+    ///
     /// Slow observers receive only the latest state. Cancelling observation does not
     /// cancel authentication work. The stream remains open across login and logout.
     public func states() -> AsyncStream<AuthenticationState> {

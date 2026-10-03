@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Zaid Rahhawi
+// SPDX-License-Identifier: MIT
+// See LICENSE for license information.
+
 import Synchronization
 
 /// Thread-safe storage that retains credentials only for the lifetime of this instance.

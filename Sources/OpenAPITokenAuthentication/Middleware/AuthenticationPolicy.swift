@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Zaid Rahhawi
+// SPDX-License-Identifier: MIT
+// See LICENSE for license information.
+
 /// Whether a request needs an authenticated session before it can be sent.
 public enum AuthenticationPolicy: Sendable, Equatable {
     /// Require a token, waiting for an in-flight login or refresh if necessary.

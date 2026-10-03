@@ -1,3 +1,7 @@
+// Copyright (c) 2026 Zaid Rahhawi
+// SPDX-License-Identifier: MIT
+// See LICENSE for license information.
+
 import HTTPTypes
 import OpenAPIRuntime
 import OpenAPITokenAuthentication
@@ -16,9 +20,11 @@ struct AuthenticationMiddlewareTests {
 
     @Test(
         arguments: [HTTPResponse.Status.ok, .unauthorized],
-        [AuthenticationPolicy.required, .ifAvailable])
+        [AuthenticationPolicy.required, .ifAvailable]
+    )
     func retriesOnceWithFreshTokenAndOriginalBody(
-        finalStatus: HTTPResponse.Status, policy: AuthenticationPolicy
+        finalStatus: HTTPResponse.Status,
+        policy: AuthenticationPolicy
     ) async throws {
         let storage = InMemoryAuthenticationStorage(TestResponse())
         let client = TestClient(refresh: { _ in TestResponse(accessToken: "fresh") })
@@ -29,7 +35,10 @@ struct AuthenticationMiddlewareTests {
         request.headerFields[.authorization] = "Bearer unrelated"
 
         let (response, body) = try await middleware.intercept(
-            request, body: HTTPBody("payload"), baseURL: baseURL, operationID: "example"
+            request,
+            body: HTTPBody("payload"),
+            baseURL: baseURL,
+            operationID: "example"
         ) { request, body, _ in
             let body = try #require(body)
             #expect(try await String(collecting: body, upTo: 100) == "payload")
@@ -57,7 +66,9 @@ struct AuthenticationMiddlewareTests {
 
         let (response, _) = try await middleware.intercept(
             HTTPRequest(method: .post, scheme: "https", authority: "example.com", path: "/resource"),
-            body: body, baseURL: baseURL, operationID: "example"
+            body: body,
+            baseURL: baseURL,
+            operationID: "example"
         ) { _, body, _ in
             calls.withLock { $0 += 1 }
             let body = try #require(body)
@@ -78,7 +89,9 @@ struct AuthenticationMiddlewareTests {
         }
         let (response, _) = try await middleware.intercept(
             HTTPRequest(method: .get, scheme: "https", authority: "example.com", path: "/resource"),
-            body: nil, baseURL: baseURL, operationID: "example"
+            body: nil,
+            baseURL: baseURL,
+            operationID: "example"
         ) { request, _, _ in
             (HTTPResponse(status: request.headerFields[.authorization] == "Bearer fresh" ? .ok : .forbidden), nil)
         }
@@ -102,7 +115,9 @@ struct AuthenticationMiddlewareTests {
         let endpoint = Task {
             try await middleware.intercept(
                 HTTPRequest(method: .get, scheme: "https", authority: "example.com", path: "/resource"),
-                body: nil, baseURL: baseURL, operationID: "example"
+                body: nil,
+                baseURL: baseURL,
+                operationID: "example"
             ) { _, _, _ in
                 // Model a transport that cooperates with endpoint cancellation.
                 try Task.checkCancellation()
@@ -126,7 +141,9 @@ struct AuthenticationMiddlewareTests {
         await #expect(throws: AuthenticationSessionError.userAuthenticationRequired) {
             try await middleware.intercept(
                 HTTPRequest(method: .get, scheme: "https", authority: "example.com", path: "/resource"),
-                body: nil, baseURL: baseURL, operationID: "example"
+                body: nil,
+                baseURL: baseURL,
+                operationID: "example"
             ) { _, _, _ in
                 Issue.record("An unauthenticated request must not reach transport under the default policy")
                 return (HTTPResponse(status: .ok), nil)
@@ -146,7 +163,10 @@ struct AuthenticationMiddlewareTests {
         let calls = Mutex(0)
         let expectedURL = baseURL
         let (response, responseBody) = try await middleware.intercept(
-            request, body: HTTPBody("payload"), baseURL: baseURL, operationID: "example"
+            request,
+            body: HTTPBody("payload"),
+            baseURL: baseURL,
+            operationID: "example"
         ) { request, body, url in
             calls.withLock { $0 += 1 }
             #expect(request.headerFields[.authorization] == authorization)
@@ -183,7 +203,9 @@ struct AuthenticationMiddlewareTests {
         let endpoint = Task {
             try await middleware.intercept(
                 HTTPRequest(method: .get, scheme: "https", authority: "example.com", path: "/resource"),
-                body: nil, baseURL: baseURL, operationID: "example"
+                body: nil,
+                baseURL: baseURL,
+                operationID: "example"
             ) { request, _, _ in
                 #expect(request.headerFields[.authorization] == "Bearer access")
                 #expect(storage.get() == TestResponse())
@@ -210,7 +232,9 @@ struct AuthenticationMiddlewareTests {
         do {
             _ = try await middleware.intercept(
                 HTTPRequest(method: .get, scheme: "https", authority: "example.com", path: "/resource"),
-                body: nil, baseURL: baseURL, operationID: "example"
+                body: nil,
+                baseURL: baseURL,
+                operationID: "example"
             ) { _, _, _ in
                 Issue.record("A refresh failure must not fall back to anonymous transport")
                 return (HTTPResponse(status: .ok), nil)
@@ -236,7 +260,9 @@ struct AuthenticationMiddlewareTests {
         do {
             let (response, _) = try await middleware.intercept(
                 HTTPRequest(method: .get, scheme: "https", authority: "example.com", path: "/resource"),
-                body: nil, baseURL: baseURL, operationID: "example"
+                body: nil,
+                baseURL: baseURL,
+                operationID: "example"
             ) { request, _, _ in
                 calls.withLock { $0 += 1 }
                 #expect(request.headerFields[.authorization] == nil)
@@ -260,7 +286,9 @@ struct AuthenticationMiddlewareTests {
         await #expect(throws: AuthenticationSessionError.userAuthenticationRequired) {
             try await middleware.intercept(
                 HTTPRequest(method: .get, scheme: "https", authority: "example.com", path: "/resource"),
-                body: nil, baseURL: baseURL, operationID: "example"
+                body: nil,
+                baseURL: baseURL,
+                operationID: "example"
             ) { _, _, _ in
                 calls.withLock { $0 += 1 }
                 throw AuthenticationSessionError.userAuthenticationRequired
@@ -279,7 +307,9 @@ struct AuthenticationMiddlewareTests {
         await #expect(throws: AuthenticationSessionError.userAuthenticationRequired) {
             try await middleware.intercept(
                 HTTPRequest(method: .get, scheme: "https", authority: "example.com", path: "/resource"),
-                body: nil, baseURL: baseURL, operationID: "example"
+                body: nil,
+                baseURL: baseURL,
+                operationID: "example"
             ) { request, _, _ in
                 calls.withLock { $0 += 1 }
                 #expect(request.headerFields[.authorization] == "Bearer access")
