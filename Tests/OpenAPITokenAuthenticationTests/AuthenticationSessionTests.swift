@@ -30,6 +30,32 @@ struct AuthenticationSessionTests {
         #expect(try await session.accessToken() == response.accessToken)
     }
 
+    @Test
+    func observersReceiveTheCurrentStateAndItsChanges() async throws {
+        let loginStarted = TestSignal()
+        let finishLogin = TestSignal()
+        let client = TestClient(login: { _ in
+            loginStarted.signal()
+            await finishLogin.wait()
+            return TestResponse()
+        })
+        let session = AuthenticationSession(client: client, storage: InMemoryAuthenticationStorage<TestResponse>())
+        var states = await session.states().makeAsyncIterator()
+
+        #expect(await states.next() == .unauthenticated)
+
+        let login = Task { try await session.authenticate(credentials: "credentials") }
+        await loginStarted.wait()
+        #expect(await states.next() == .authenticating)
+
+        finishLogin.signal()
+        try await login.value
+        #expect(await states.next() == .authenticated)
+
+        await session.logout()
+        #expect(await states.next() == .unauthenticated)
+    }
+
     @Test(
         arguments: [
             nil,

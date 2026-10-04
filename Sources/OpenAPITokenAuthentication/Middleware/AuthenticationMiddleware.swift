@@ -20,7 +20,12 @@ public struct AuthenticationMiddleware<Credentials: Sendable, Response: Authenti
     private let policy: AuthenticationPolicy
     private let shouldRefresh: @Sendable (HTTPResponse, HTTPBody?) -> Bool
 
-    /// Decides whether a response requires authentication refresh.
+    /// A middleware that refreshes and retries when `shouldRefresh` accepts a response.
+    ///
+    /// - Parameters:
+    ///   - session: The session that supplies and refreshes tokens.
+    ///   - policy: Whether a request needs an authenticated session.
+    ///   - shouldRefresh: Decides whether a response requires authentication refresh.
     public init(
         session: AuthenticationSession<Credentials, Response>,
         policy: AuthenticationPolicy = .required,
@@ -31,6 +36,12 @@ public struct AuthenticationMiddleware<Credentials: Sendable, Response: Authenti
         self.shouldRefresh = shouldRefresh
     }
 
+    /// A middleware that refreshes and retries on the given status codes.
+    ///
+    /// - Parameters:
+    ///   - session: The session that supplies and refreshes tokens.
+    ///   - policy: Whether a request needs an authenticated session.
+    ///   - refreshableStatusCodes: The statuses that trigger one refresh and retry.
     public init(
         session: AuthenticationSession<Credentials, Response>,
         policy: AuthenticationPolicy = .required,
@@ -41,6 +52,8 @@ public struct AuthenticationMiddleware<Credentials: Sendable, Response: Authenti
         }
     }
 
+    /// Attaches the session's access token, then refreshes and retries a replayable request once
+    /// when the response asks for it.
     public func intercept(
         _ request: HTTPRequest,
         body: HTTPBody?,
