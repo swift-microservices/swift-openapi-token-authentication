@@ -37,7 +37,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-openapi-runtime.git", from: "1.12.1", traits: []),
-        .package(url: "https://github.com/apple/swift-http-types", from: "1.0.0"),
+        .package(url: "https://github.com/apple/swift-http-types.git", from: "1.0.0"),
     ],
     targets: [
         .target(
@@ -51,7 +51,7 @@ let package = Package(
         .testTarget(
             name: "OpenAPITokenAuthenticationTests",
             dependencies: [
-                "OpenAPITokenAuthentication",
+                .target(name: "OpenAPITokenAuthentication"),
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
                 .product(name: "HTTPTypes", package: "swift-http-types"),
             ],
