@@ -13,7 +13,7 @@ SDKs, and servers alike. Verifying the token is the server's business; on a Swif
 [swift-authentication](https://github.com/swift-microservices/swift-authentication) packages do it.
 
 ```swift
-.package(url: "https://github.com/swift-microservices/swift-openapi-token-authentication.git", from: "0.2.1"),
+.package(url: "https://github.com/swift-microservices/swift-openapi-token-authentication.git", from: "1.0.0"),
 ```
 
 ```swift

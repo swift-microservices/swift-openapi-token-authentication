@@ -12,7 +12,8 @@ when the response asks for it.
 The API's own sign-in and refresh calls are an ``AuthenticationClient`` you implement over the
 generated client, returning an ``AuthenticationResponse``. The session keeps credentials in an
 ``AuthenticationStorage``; ``InMemoryAuthenticationStorage`` keeps them for the life of the
-process, and a Keychain-backed storage keeps them across restarts.
+process. To keep them across restarts, implement ``AuthenticationStorage`` over the platform's
+secure store, such as the Keychain.
 
 ## Example
 

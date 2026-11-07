@@ -42,6 +42,12 @@ public actor AuthenticationSession<Credentials: Sendable, Response: Authenticati
     }
 
     /// Restores saved credentials while the refresh token remains valid.
+    ///
+    /// - Parameters:
+    ///   - client: The API calls that sign in and refresh, made without ``AuthenticationMiddleware``.
+    ///   - storage: Where credentials are kept; stored credentials that can no longer refresh are wiped.
+    ///   - refreshLeeway: How many seconds before the access token expires to refresh it; finite and
+    ///     not negative.
     public init(
         client: any AuthenticationClient<Credentials, Response>,
         storage: any AuthenticationStorage<Response>,
